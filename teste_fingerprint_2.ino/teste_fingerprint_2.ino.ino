@@ -19,11 +19,12 @@ struct Button {
   bool pressed;
 };
 
-Button button1 = {18, 0, false};
+Button buttonGravar = {18, 0, false};
+Button buttonCancelar = {19, 0, false};
 
 void IRAM_ATTR isr() {
-  button1.numberKeyPresses += 1;
-  button1.pressed = true;
+  buttonGravar.numberKeyPresses += 1;
+  buttonGravar.pressed = true;
 }
 
 
@@ -62,8 +63,8 @@ void setup()
   digitalWrite(doorLock, HIGH);
 
   // Botao
-  pinMode(button1.PIN, INPUT_PULLUP);
-  attachInterrupt(button1.PIN, isr, FALLING);
+  pinMode(buttonGravar.PIN, INPUT_PULLUP);
+  attachInterrupt(buttonGravar.PIN, isr, FALLING);
 
 }
 
@@ -74,9 +75,9 @@ void loop()
 //  ++teste;
 //  Serial.println(teste);
 //  return;
-  if (button1.pressed && button1.numberKeyPresses > 5) {
-    Serial.printf("Button 1 has been pressed %u times\n", button1.numberKeyPresses);
-    //button1.pressed = false;
+  if (buttonGravar.pressed && buttonGravar.numberKeyPresses > 5) {
+    Serial.printf("Button 1 has been pressed %u times\n", buttonGravar.numberKeyPresses);
+    //buttonGravar.pressed = false;
     id = readnumber();
     if (id == 0) {// ID #0 not allowed, try again!
       Serial.println("ID #: 0");
@@ -87,8 +88,8 @@ void loop()
 
     while (!getFingerprintEnroll());
 
-    button1.pressed = false;
-    button1.numberKeyPresses = 0;
+    buttonGravar.pressed = false;
+    buttonGravar.numberKeyPresses = 0;
 
   } else {
     
