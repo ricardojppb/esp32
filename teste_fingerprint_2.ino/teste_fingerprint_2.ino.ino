@@ -5,32 +5,32 @@
 //#include <SoftwareSerial.h>
 
 /*
- * Pinagem
- * 
- * LCD - ESP32
- * - SDA - D21
- * - SCL - D22
- * - VCC - VIN
- * - GND - GND
- * 
- * BUTTON GRAVAR
- * PIN1 - D18
- * 
- * BUTTON - CANCELAR 
- * PIN1 - D19
- * 
- * FINGERPRINT - ESP32
- * GND - GND
- * RX - TX
- * TX - RX
- * VCC - 3V3
- * 
- * MODULO RELE - ESP32
- * IN (5V) - D5
- * VCC - VCC (5V)
- * GND - GND 
- * 
- */
+   Pinagem
+
+   LCD - ESP32
+   - SDA - D21
+   - SCL - D22
+   - VCC - VIN
+   - GND - GND
+
+   BUTTON GRAVAR
+   PIN1 - D18
+
+   BUTTON - CANCELAR
+   PIN1 - D19
+
+   FINGERPRINT - ESP32
+   GND - GND
+   RX - TX
+   TX - RX
+   VCC - 3V3
+
+   MODULO RELE - ESP32
+   IN (5V) - D5
+   VCC - VCC (5V)
+   GND - GND
+
+*/
 
 
 
@@ -38,24 +38,23 @@
 HardwareSerial mySerial(0);
 LiquidCrystal_I2C lcd(0x27, 20, 4); //Inisialisasi I2C LCD
 
-int doorLock = 8; //pin untuk sinyal doorlock
+int doorLock = 5; //pino do rele
 uint8_t id;
 
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
 
 struct Button {
   const uint8_t PIN;
-  uint32_t numberKeyPresses;
+  //uint32_t numberKeyPresses;
   bool pressed;
 };
 
-#define RELE 5
 
-Button buttonGravar = {18, 0, false};
-Button buttonCancelar = {19, 0, false};
+Button buttonGravar = {18, false};
+Button buttonCancelar = {19, false};
 
 void IRAM_ATTR isr() {
-  buttonGravar.numberKeyPresses += 1;
+  //buttonGravar.numberKeyPresses += 1;
   buttonGravar.pressed = true;
 }
 
@@ -103,12 +102,12 @@ void setup()
 void loop()
 {
 
-//  int teste = finger.templateCount;
-//  ++teste;
-//  Serial.println(teste);
-//  return;
-  if (buttonGravar.pressed && buttonGravar.numberKeyPresses > 5) {
-    Serial.printf("Button 1 has been pressed %u times\n", buttonGravar.numberKeyPresses);
+  //  int teste = finger.templateCount;
+  //  ++teste;
+  //  Serial.println(teste);
+  //  return;
+  if (buttonGravar.pressed) {
+    //Serial.printf("Button 1 has been pressed %u times\n", buttonGravar.numberKeyPresses);
     //buttonGravar.pressed = false;
     id = readnumber();
     if (id == 0) {// ID #0 not allowed, try again!
@@ -121,12 +120,13 @@ void loop()
     while (!getFingerprintEnroll());
 
     buttonGravar.pressed = false;
-    buttonGravar.numberKeyPresses = 0;
+    //buttonGravar.numberKeyPresses = 0;
+     msgInit();
 
   } else {
-    
+
     getFingerprintID();
-    
+
   }
 
   //getFingerprintID();
@@ -137,33 +137,45 @@ void loop()
 uint8_t readnumber(void) {
   uint8_t num = finger.templateCount;
   return ++num;
-  
+
 }
 
 uint8_t getFingerprintEnroll() {
 
   int p = -1;
-  Serial.print("Waiting for valid finger to enroll as #"); 
+  Serial.print("Waiting for valid finger to enroll as #");
   Serial.println(id);
-  
+
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("GRAVAR NOVA DIGITAL");
+
   while (p != FINGERPRINT_OK) {
     p = finger.getImage();
     switch (p) {
-    case FINGERPRINT_OK:
-      Serial.println("Image taken");
-      break;
-    case FINGERPRINT_NOFINGER:
-      Serial.println(".");
-      break;
-    case FINGERPRINT_PACKETRECIEVEERR:
-      Serial.println("Communication error");
-      break;
-    case FINGERPRINT_IMAGEFAIL:
-      Serial.println("Imaging error");
-      break;
-    default:
-      Serial.println("Unknown error");
-      break;
+      case FINGERPRINT_OK:
+
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("GRAVAR NOVA DIGITAL");
+        lcd.setCursor(0, 1);
+        lcd.print("DIGITAL TIRADA");
+        delay(2000);
+
+        Serial.println("Image taken");
+        break;
+      case FINGERPRINT_NOFINGER:
+        Serial.println(".");
+        break;
+      case FINGERPRINT_PACKETRECIEVEERR:
+        Serial.println("Communication error");
+        break;
+      case FINGERPRINT_IMAGEFAIL:
+        Serial.println("Imaging error");
+        break;
+      default:
+        Serial.println("Unknown error");
+        break;
     }
   }
 
@@ -172,6 +184,13 @@ uint8_t getFingerprintEnroll() {
   p = finger.image2Tz(1);
   switch (p) {
     case FINGERPRINT_OK:
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("GRAVAR NOVA DIGITAL");
+      lcd.setCursor(0, 1);
+      lcd.print("DIGITAL CONVERTIDA");
+      delay(2000);
+
       Serial.println("Image converted");
       break;
     case FINGERPRINT_IMAGEMESS:
@@ -190,36 +209,57 @@ uint8_t getFingerprintEnroll() {
       Serial.println("Unknown error");
       return p;
   }
-  
+
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("GRAVAR NOVA DIGITAL");
+  lcd.setCursor(0, 1);
+  lcd.print("RETIRE O DEDO");
+
   Serial.println("Remove finger");
   delay(2000);
   p = 0;
   while (p != FINGERPRINT_NOFINGER) {
     p = finger.getImage();
   }
-  
-  Serial.print("ID "); 
+
+  Serial.print("ID ");
   Serial.println(id);
   p = -1;
   Serial.println("Place same finger again");
+
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("GRAVAR NOVA DIGITAL");
+  lcd.setCursor(0, 1);
+  lcd.print("COLOQUE O MESMO DEDO");
+  delay(2000);
+
   while (p != FINGERPRINT_OK) {
     p = finger.getImage();
     switch (p) {
-    case FINGERPRINT_OK:
-      Serial.println("Image taken");
-      break;
-    case FINGERPRINT_NOFINGER:
-      Serial.print(".");
-      break;
-    case FINGERPRINT_PACKETRECIEVEERR:
-      Serial.println("Communication error");
-      break;
-    case FINGERPRINT_IMAGEFAIL:
-      Serial.println("Imaging error");
-      break;
-    default:
-      Serial.println("Unknown error");
-      break;
+      case FINGERPRINT_OK:
+        Serial.println("Image taken");
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("GRAVAR NOVA DIGITAL");
+        lcd.setCursor(0, 1);
+        lcd.print("DIGITAL CONFERIDA");
+        delay(2000);
+
+        break;
+      case FINGERPRINT_NOFINGER:
+        Serial.print(".");
+        break;
+      case FINGERPRINT_PACKETRECIEVEERR:
+        Serial.println("Communication error");
+        break;
+      case FINGERPRINT_IMAGEFAIL:
+        Serial.println("Imaging error");
+        break;
+      default:
+        Serial.println("Unknown error");
+        break;
     }
   }
 
@@ -229,6 +269,12 @@ uint8_t getFingerprintEnroll() {
   switch (p) {
     case FINGERPRINT_OK:
       Serial.println("Image converted");
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("GRAVAR NOVA DIGITAL");
+      lcd.setCursor(0, 1);
+      lcd.print("DIGITAL CONVERTIDA");
+      delay(2000);
       break;
     case FINGERPRINT_IMAGEMESS:
       Serial.println("Image too messy");
@@ -246,31 +292,59 @@ uint8_t getFingerprintEnroll() {
       Serial.println("Unknown error");
       return p;
   }
-  
+
   // OK converted!
-  Serial.print("Creating model for #");  
+  Serial.print("Creating model for #");
   Serial.println(id);
-  
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("GRAVAR NOVA DIGITAL");
+  lcd.setCursor(0, 1);
+  lcd.print("DIGITAL GRAVADA");
+  delay(2000);
+
   p = finger.createModel();
   if (p == FINGERPRINT_OK) {
     Serial.println("Prints matched!");
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("GRAVAR NOVA DIGITAL");
+    lcd.setCursor(0, 1);
+    lcd.print("DIGITAL COINCIDE");
+    delay(2000);
+
   } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
     Serial.println("Communication error");
     return p;
   } else if (p == FINGERPRINT_ENROLLMISMATCH) {
     Serial.println("Fingerprints did not match");
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("GRAVAR NOVA DIGITAL");
+    lcd.setCursor(0, 1);
+    lcd.print("DIGITAL NAO CONFERE");
+    delay(2000);
     return p;
   } else {
     Serial.println("Unknown error");
     return p;
-  }   
-  
-  Serial.print("ID "); 
+  }
+
+  Serial.print("ID ");
   Serial.println(id);
-  
+
   p = finger.storeModel(id);
   if (p == FINGERPRINT_OK) {
     Serial.println("Stored!");
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("GRAVAR NOVA DIGITAL");
+    lcd.setCursor(0, 1);
+    lcd.print("DIGITAL GRAVADA #" + id);
+    delay(2000);
+
+    return !p;
+
   } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
     Serial.println("Communication error");
     return p;
@@ -283,7 +357,7 @@ uint8_t getFingerprintEnroll() {
   } else {
     Serial.println("Unknown error");
     return p;
-  }   
+  }
 }
 
 // Leitura da digital
@@ -341,7 +415,7 @@ uint8_t getFingerprintID() {
     Serial.println("Found a print match!");
     lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.print("LEITURA CONFIRMADA");
+    lcd.print("DIGITAL CONFIRMADA");
     delay (100);
     //suara1();
     digitalWrite(doorLock, LOW);
@@ -356,7 +430,7 @@ uint8_t getFingerprintID() {
     lcd.clear();
     lcd.setCursor(3, 0);
     lcd.print("SEJA BEM VINDO");
-    delay(100);
+    //delay(100);
     lcd.setCursor(2, 1);
     lcd.print("PORTA DESTRAVADA");
     delay(1000);
@@ -376,21 +450,14 @@ uint8_t getFingerprintID() {
 
     Serial.println("Did not find a match");
     //suara2();
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("DIGITAL");
-    delay (100);
-    lcd.setCursor(0, 1);
-    lcd.print("NAO");
-    delay (100);
-    lcd.setCursor(0, 2);
-    lcd.print("ENCONTRADA");
-    delay (2000);
 
     lcd.clear();
     lcd.setCursor(0, 0);
+    lcd.print("DIGITAL INVALIDA");
+
+    lcd.setCursor(0, 1);
     lcd.print("TENTE NOVAMENTE");
-    delay(3000);
+    delay(2000);
     msgInit();
     return p;
 
@@ -411,6 +478,8 @@ uint8_t getFingerprintID() {
   Serial.print(finger.fingerID);
   Serial.print(" with confidence of ");
   Serial.println(finger.confidence);
+
+  msgInit();
 
   return finger.fingerID;
 }
