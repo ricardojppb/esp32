@@ -4,6 +4,36 @@
 #include <LiquidCrystal_I2C.h>
 //#include <SoftwareSerial.h>
 
+/*
+ * Pinagem
+ * 
+ * LCD - ESP32
+ * - SDA - D21
+ * - SCL - D22
+ * - VCC - VIN
+ * - GND - GND
+ * 
+ * BUTTON GRAVAR
+ * PIN1 - D18
+ * 
+ * BUTTON - CANCELAR 
+ * PIN1 - D19
+ * 
+ * FINGERPRINT - ESP32
+ * GND - GND
+ * RX - TX
+ * TX - RX
+ * VCC - 3V3
+ * 
+ * MODULO RELE - ESP32
+ * IN (5V) - D5
+ * VCC - VCC (5V)
+ * GND - GND 
+ * 
+ */
+
+
+
 //SoftwareSerial mySerial(2, 3); //Inisialisasi serial RX TX modul fingerprint
 HardwareSerial mySerial(0);
 LiquidCrystal_I2C lcd(0x27, 20, 4); //Inisialisasi I2C LCD
@@ -18,6 +48,8 @@ struct Button {
   uint32_t numberKeyPresses;
   bool pressed;
 };
+
+#define RELE 5
 
 Button buttonGravar = {18, 0, false};
 Button buttonCancelar = {19, 0, false};

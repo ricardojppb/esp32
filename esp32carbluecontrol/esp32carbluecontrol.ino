@@ -82,18 +82,20 @@ void loop() {
     else if (command == "83") parar();
 
   }
-  delay(50);
+  //delay(50);
 }
 
 void up() {
 
+  ledcWrite(pwmChannelA, 800);
+  ledcWrite(pwmChannelB, 800);
   digitalWrite(IN1, HIGH); // turn on
   digitalWrite(IN2, LOW); // turn on
-  ledcWrite(pwmChannelA, 1023);
+
   // wait
   digitalWrite(IN3, HIGH); // turn off
   digitalWrite(IN4, LOW); // turn off
-  ledcWrite(pwmChannelB, 1023);
+
   delay(10);
   Serial.println("frente");
 
@@ -101,13 +103,15 @@ void up() {
 
 void down() {
 
+  ledcWrite(pwmChannelA, 800);
+  ledcWrite(pwmChannelB, 800);
   digitalWrite(IN1, LOW); // turn on
   digitalWrite(IN2, HIGH); // turn on
-  ledcWrite(pwmChannelA, 1023);
+
   //delay(500);              // wait
   digitalWrite(IN3, LOW); // turn off
   digitalWrite(IN4, HIGH); // turn off
-  ledcWrite(pwmChannelB, 1023);
+
   delay(10);
   Serial.println("traz");
 
@@ -115,13 +119,15 @@ void down() {
 
 void right() {
 
+  ledcWrite(pwmChannelA, 800);
+  ledcWrite(pwmChannelB, 800);
   digitalWrite(IN1, HIGH); // turn on
   digitalWrite(IN2, LOW); // turn on
-  ledcWrite(pwmChannelA, 1023);
+
   //delay(500);              // wait
   digitalWrite(IN3, LOW); // turn off
   digitalWrite(IN4, HIGH); // turn off
-  ledcWrite(pwmChannelB, 1023);
+
   delay(10);
   Serial.println("esquerda");
 
@@ -129,13 +135,15 @@ void right() {
 
 void left() {
 
+  ledcWrite(pwmChannelA, 800);
+  ledcWrite(pwmChannelB, 800);
   digitalWrite(IN1, LOW); // turn on
   digitalWrite(IN2, HIGH); // turn on
-  ledcWrite(pwmChannelA, 1023);
+
   //delay(500);              // wait
   digitalWrite(IN3, HIGH); // turn off
   digitalWrite(IN4, LOW); // turn off
-  ledcWrite(pwmChannelB, 1023);
+
   delay(10);
   Serial.println("direita");
 
@@ -143,13 +151,15 @@ void left() {
 
 void up_left() {
 
+  ledcWrite(pwmChannelA, 800);
+  ledcWrite(pwmChannelB, 700);
   digitalWrite(IN1, LOW); // turn on
   digitalWrite(IN2, HIGH); // turn on
-  ledcWrite(pwmChannelA, 700);
+
   //delay(500);              // wait
   digitalWrite(IN3, HIGH); // turn off
   digitalWrite(IN4, LOW); // turn off
-  ledcWrite(pwmChannelB, 1023);
+
   delay(10);
   Serial.println("frente-direita");
 
@@ -157,52 +167,60 @@ void up_left() {
 
 void up_right() {
 
+  ledcWrite(pwmChannelA, 700);
+  ledcWrite(pwmChannelB, 800);
   digitalWrite(IN1, HIGH); // turn on
   digitalWrite(IN2, LOW); // turn on
-  ledcWrite(pwmChannelA, 700);
+
   //delay(500);              // wait
   digitalWrite(IN3, LOW); // turn off
   digitalWrite(IN4, HIGH); // turn off
-  ledcWrite(pwmChannelB, 1023);
+
   delay(10);
   Serial.println("frente-esquerda");
 }
 
 void down_left() {
 
+  ledcWrite(pwmChannelA, 800 );
+  ledcWrite(pwmChannelB, 700);
   digitalWrite(IN1, HIGH); // turn on
   digitalWrite(IN2, LOW); // turn on
-  ledcWrite(pwmChannelA, 1023 );
+
   //delay(500);              // wait
   digitalWrite(IN3, LOW); // turn off
   digitalWrite(IN4, HIGH); // turn off
-  ledcWrite(pwmChannelB, 700);
+
   delay(10);
   Serial.println("traz-direita");
 }
 
 void down_right() {
 
+  ledcWrite(pwmChannelA, 700);
+  ledcWrite(pwmChannelB, 800);
   digitalWrite(IN1, LOW); // turn on
   digitalWrite(IN2, HIGH); // turn on
-  ledcWrite(pwmChannelA, 1023);
+
   //delay(500);              // wait
   digitalWrite(IN3, HIGH); // turn off
   digitalWrite(IN4, LOW); // turn off
-  ledcWrite(pwmChannelB, 700);
+
   delay(10);
   Serial.println("traz-esquerda");
 }
 
 void parar() {
 
+  ledcWrite(pwmChannelA, 0);
+  ledcWrite(pwmChannelB, 0);
   digitalWrite(IN1, LOW); // turn on
   digitalWrite(IN2, LOW); // turn on
-  ledcWrite(pwmChannelA, 0);
+
   //delay(500);              // wait
   digitalWrite(IN3, LOW); // turn off
   digitalWrite(IN4, LOW); // turn off
-  ledcWrite(pwmChannelB, 0);
+
   delay(10);
   Serial.println("parar");
 }
